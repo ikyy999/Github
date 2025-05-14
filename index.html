@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KyyXRat V2 Control Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00c853;
+            --primary-dark: #009624;
+            --primary-light: #5efc82;
+            --danger: #ff3d00;
+            --warning: #ff9100;
+            --dark: #0a0a0a;
+            --darker: #050505;
+            --dark-light: #1a1a1a;
+            --text: #e0e0e0;
+            --text-secondary: #9e9e9e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 200, 83, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 200, 83, 0.03) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Key Login Styles */
+        .key-login {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--darker);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.3s ease;
+        }
+        
+        .key-box {
+            background-color: var(--dark-light);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(0, 200, 83, 0.2);
+        }
+        
+        .key-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .key-title i {
+            font-size: 28px;
+        }
+        
+        .key-input {
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(0, 200, 83, 0.3);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .key-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 200, 83, 0.3);
+        }
+        
+        .key-submit {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: black;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .key-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
+        }
+        
+        /* Status Messages */
+        .status-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--dark-light);
+            padding: 20px 40px;
+            border-radius: 10px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            z-index: 3000;
+            animation: modalSlideIn 0.2s ease-out;
+        }
+        
+        .status-message.success {
+            border: 1px solid var(--primary);
+        }
+        
+        .status-message.error {
+            border: 1px solid var(--danger);
+        }
+        
+        .status-icon {
+            font-size: 32px;
+        }
+        
+        .success-icon {
+            color: var(--primary);
+            animation: bounceIn 0.4s ease-out;
+        }
+        
+        .error-icon {
+            color: var(--danger);
+            animation: shake 0.4s ease-out;
+        }
+        
+        .status-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.3;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 200, 83, 0.3);
+        }
+        
+        .logo-icon i {
+            color: var(--darker);
+            font-size: 20px;
+        }
+        
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+        
+        .logo-text p {
+            font-size: 11px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(0, 200, 83, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--primary);
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .connection-status::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0, 200, 83, 0.2), transparent);
+            animation: statusPulse 2s infinite;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+        }
+        
+        /* Error Page Styles */
+        .error-container {
+            text-align: center;
+            padding: 50px 20px;
+            margin-top: 100px;
+        }
+
+        .error-code {
+            font-size: 120px;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(0, 200, 83, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            font-size: 24px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .danger-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .danger-btn {
+            padding: 15px 30px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .admin-btn {
+            background: var(--primary);
+            color: var(--darker);
+        }
+
+        .click-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Progress Modal */
+        .progress-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+        
+        .progress-content {
+            background-color: var(--dark-light);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 61, 0, 0.2);
+        }
+        
+        .progress-header {
+            padding: 15px 20px;
+            background: linear-gradient(90deg, var(--dark-light), rgba(255, 61, 0, 0.1));
+            border-bottom: 1px solid rgba(255, 61, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .progress-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--danger);
+        }
+        
+        .progress-body {
+            padding: 20px;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--danger), #ff6e40);
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: rgba(255, 61, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--danger);
+        }
+        
+        .step-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .step-complete {
+            color: var(--primary);
+        }
+        
+        /* Admin Modal */
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+        
+        .admin-content {
+            background-color: var(--dark-light);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 200, 83, 0.2);
+        }
+        
+        .admin-header {
+            padding: 15px 20px;
+            background: linear-gradient(90deg, var(--dark-light), rgba(0, 200, 83, 0.1));
+            border-bottom: 1px solid rgba(0, 200, 83, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .admin-body {
+            padding: 20px;
+        }
+        
+        .admin-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-size: 18px;
+        }
+        
+        .contact-info {
+            flex: 1;
+        }
+        
+        .contact-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .contact-username {
+            font-family: 'Fira Code', monospace;
+            color: var(--primary-light);
+            font-size: 14px;
+        }
+        
+        .contact-location {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Animations */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes statusPulse {
+            0% { opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { opacity: 0; }
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(10px) translateX(-50%); opacity: 0; }
+            to { transform: translateY(0) translateX(-50%); opacity: 1; }
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+            20%, 40%, 60%, 80% { transform: translateX(3px); }
+        }
+        
+        /* Utility Classes */
+        .hidden {
+            display: none;
+        }
+        
+        .visible {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <!-- Key Login Screen -->
+    <div class="key-login" id="keyLogin">
+        <div class="key-box">
+            <div class="key-title">
+                <i class="fas fa-user-secret"></i>
+                <span>AUTHENTICATION REQUIRED</span>
+            </div>
+            <input type="password" class="key-input" id="keyInput" placeholder="Enter access key">
+            <button class="key-submit" id="keySubmit">VERIFY IDENTITY</button>
+        </div>
+    </div>
+    
+    <!-- Status Messages -->
+    <div class="status-message success" id="successMessage">
+        <i class="fas fa-check-circle status-icon success-icon"></i>
+        <div class="status-text">Access Granted! Initializing system...</div>
+    </div>
+    
+    <div class="status-message error" id="errorMessage">
+        <i class="fas fa-times-circle status-icon error-icon"></i>
+        <div class="status-text">Invalid Credentials! Access Denied.</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container hidden" id="mainContent">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-skull-crossbones"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>KyyXRat V2</h1>
+                    <p>Remote Administration Console</p>
+                </div>
+            </div>
+            <div class="connection-status">
+                <div class="status-indicator"></div>
+                <span>Connected to Mainframe</span>
+            </div>
+        </header>
+
+        <div class="danger-buttons">
+            <button class="danger-btn click-btn" id="clickBtn">INITIATE SEQUENCE</button>
+            <button class="danger-btn admin-btn" id="adminBtn">CONTACT SUPPORT</button>
+        </div>
+
+        <div class="error-container">
+            <div class="error-code">404</div>
+            <div class="error-message">AWAITING USER COMMANDS</div>
+        </div>
+    </div>
+
+    <!-- Progress Modal -->
+    <div class="progress-modal" id="progressModal">
+        <div class="progress-content">
+            <div class="progress-header">
+                <div class="progress-title">
+                    <i class="fas fa-radiation"></i>
+                    <span>DATA EXTRACTION IN PROGRESS</span>
+                </div>
+                <i class="fas fa-times" id="closeProgress"></i>
+            </div>
+            <div class="progress-body">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-steps">
+                    <div class="progress-step">
+                        <div class="step-icon">
+                            <i class="fas fa-spinner fa-spin" id="step1Icon"></i>
+                        </div>
+                        <div class="step-text" id="step1Text">Establishing connection...</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon">
+                            <i class="fas fa-clock" id="step2Icon"></i>
+                        </div>
+                        <div class="step-text" id="step2Text">Collecting system data</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon">
+                            <i class="fas fa-clock" id="step3Icon"></i>
+                        </div>
+                        <div class="step-text" id="step3Text">Extracting sensitive files</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon">
+                            <i class="fas fa-clock" id="step4Icon"></i>
+                        </div>
+                        <div class="step-text" id="step4Text">Finalizing transfer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-content">
+            <div class="admin-header">
+                <div class="admin-title">
+                    <i class="fas fa-user-shield"></i>
+                    <span>OFFICIAL SUPPORT CONTACTS</span>
+                </div>
+                <i class="fas fa-times" id="closeAdmin"></i>
+            </div>
+            <div class="admin-body">
+                <div class="admin-contact">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-telegram"></i>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-name">Main Administrator</div>
+                            <div class="contact-username">@voxas70</div>
+                            <div class="contact-location">Iraq | 24/7 Support</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-telegram"></i>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-name">Student Administrator</div>
+                            <div class="contact-username">@ikyy999</div>
+                            <div class="contact-location">Indonesia | Limited Support</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Key Authentication
+        const keyLogin = document.getElementById('keyLogin');
+        const keyInput = document.getElementById('keyInput');
+        const keySubmit = document.getElementById('keySubmit');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const mainContent = document.getElementById('mainContent');
+        
+        // Modal Elements
+        const progressModal = document.getElementById('progressModal');
+        const adminModal = document.getElementById('adminModal');
+        const closeProgress = document.getElementById('closeProgress');
+        const closeAdmin = document.getElementById('closeAdmin');
+        const clickBtn = document.getElementById('clickBtn');
+        const adminBtn = document.getElementById('adminBtn');
+        
+        // Progress Elements
+        const progressBar = document.getElementById('progressBar');
+        const stepIcons = [
+            document.getElementById('step1Icon'),
+            document.getElementById('step2Icon'),
+            document.getElementById('step3Icon'),
+            document.getElementById('step4Icon')
+        ];
+        const stepTexts = [
+            document.getElementById('step1Text'),
+            document.getElementById('step2Text'),
+            document.getElementById('step3Text'),
+            document.getElementById('step4Text')
+        ];
+        
+        // Valid key (for demo purposes)
+        const validKey = "KyyX1337";
+        
+        // Authenticate user
+        keySubmit.addEventListener('click', authenticate);
+        keyInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') authenticate();
+        });
+        
+        function authenticate() {
+            const enteredKey = keyInput.value.trim();
+            
+            if (enteredKey === validKey) {
+                // Show success message
+                successMessage.style.display = 'flex';
+                errorMessage.style.display = 'none';
+                
+                // Hide after 1.5 seconds
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 1500);
+                
+                // Hide key login after delay
+                setTimeout(() => {
+                    keyLogin.style.opacity = '0';
+                    setTimeout(() => {
+                        keyLogin.style.display = 'none';
+                        mainContent.classList.remove('hidden');
+                    }, 300);
+                }, 800);
+                
+            } else {
+                // Show error message
+                errorMessage.style.display = 'flex';
+                successMessage.style.display = 'none';
+                
+                // Hide after 1.5 seconds
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 1500);
+                
+                // Clear input and shake animation
+                keyInput.value = '';
+                keyInput.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    keyInput.style.animation = '';
+                }, 500);
+            }
+        }
+        
+        // Modal Controls
+        clickBtn.addEventListener('click', () => {
+            progressModal.style.display = 'flex';
+            startDataExtraction();
+        });
+        
+        adminBtn.addEventListener('click', () => {
+            adminModal.style.display = 'flex';
+        });
+        
+        closeProgress.addEventListener('click', () => {
+            progressModal.style.display = 'none';
+            resetProgress();
+        });
+        
+        closeAdmin.addEventListener('click', () => {
+            adminModal.style.display = 'none';
+        });
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === progressModal) {
+                progressModal.style.display = 'none';
+                resetProgress();
+            }
+            if (e.target === adminModal) {
+                adminModal.style.display = 'none';
+            }
+        });
+        
+        // Data Extraction Sequence
+        function startDataExtraction() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = `${progress}%`;
+                
+                // Update steps based on progress
+                if (progress >= 25 && !stepIcons[1].classList.contains('step-complete')) {
+                    updateStep(1, 'Collecting system data...');
+                }
+                if (progress >= 50 && !stepIcons[2].classList.contains('step-complete')) {
+                    updateStep(2, 'Extracting sensitive files...');
+                }
+                if (progress >= 75 && !stepIcons[3].classList.contains('step-complete')) {
+                    updateStep(3, 'Finalizing transfer...');
+                }
+                if (progress >= 100) {
+                    updateStep(0, 'Connection established');
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressModal.style.display = 'none';
+                        resetProgress();
+                    }, 1000);
+                }
+            }, 400);
+        }
+        
+        function updateStep(stepIndex, text) {
+            stepIcons[stepIndex].classList.remove('fa-spinner', 'fa-spin', 'fa-clock');
+            stepIcons[stepIndex].classList.add('fa-check', 'step-complete');
+            stepTexts[stepIndex].textContent = text;
+            stepTexts[stepIndex].classList.add('step-complete');
+        }
+        
+        function resetProgress() {
+            progressBar.style.width = '0%';
+            stepIcons.forEach((icon, index) => {
+                icon.className = 'fas';
+                if (index === 0) {
+                    icon.classList.add('fa-spinner', 'fa-spin');
+                } else {
+                    icon.classList.add('fa-clock');
+                }
+            });
+            stepTexts[0].textContent = 'Establishing connection...';
+            stepTexts[1].textContent = 'Collecting system data';
+            stepTexts[2].textContent = 'Extracting sensitive files';
+            stepTexts[3].textContent = 'Finalizing transfer';
+            stepTexts.forEach(text => text.classList.remove('step-complete'));
+        }
+    </script>
+</body>
+</html>
